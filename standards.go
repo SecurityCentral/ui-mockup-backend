@@ -16,8 +16,28 @@ type Standard struct {
 	Controls[] Controls `json:"controls"`
 }
 
+type Certification struct {
+	CertificationName string `json:"certificationName"`
+	StandardName string `json:"standardName"`
+	ControlName[] string `json:"controls"`
+}
+
+type UserControlModel struct {
+	Control string
+	Status int
+}
+
+type UserCertModel struct {
+	UserName string
+	Controls []UserControlModel
+}
+
 type StandardService interface {
 	CreateStandard(u *Standard) error
-	GetStandardInfo(standardname string) (error, Standard)
+	GetStandardInfo(standardname string) (error, []Standard)
+	CreateCertification(u *Certification) error
+	GetCertificationInfo(certificationName string) (error, []Certification)
+	AddCertificationToUser(model UserCertModel) error
+	GetCertificationForUser(userName string) (error, []UserControlModel)
 }
 

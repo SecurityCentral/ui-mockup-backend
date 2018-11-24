@@ -14,13 +14,14 @@ type Server struct {
   config *root.ServerConfig
 }
 
-func NewServer(u root.StandardService, config *root.Config) *Server {
+func NewServer(stdService root.StandardService, userService root.UserService, config *root.Config) *Server {
   s := Server { 
     router: mux.NewRouter(),
     config: config.Server }
   
   a := authHelper{config.Auth.Secret}
-  NewStandardRouter(u, s.getSubrouter("/user"), &a)
+  NewStandardRouter(stdService, s.getSubrouter("/standard"), &a)
+  NewUserRouter(userService, s.getSubrouter("/user"), &a)
   return &s
 }
 

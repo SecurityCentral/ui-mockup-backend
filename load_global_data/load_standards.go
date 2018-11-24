@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"ui-mockup-backend"
+	"ui-mockup-backend/mongo"
 
 	"github.com/ghodss/yaml"
 )
@@ -29,11 +30,13 @@ type Certification struct {
 }
 */
 
-func main() {
+func temp() {
 
-	a := App{}
-	a.Initialize()
-	a.Run()
+	//a := App{}
+	//a.Initialize()
+	//a.Run()
+	LoadStandards()
+
 
 	/*
 	standardsYamlFile, err := ioutil.ReadFile("/Users/gauravbang/Documents/meng/security-central/standards/nist-800-53-latest.yaml")
@@ -101,7 +104,9 @@ func main() {
 
 func LoadStandards() (error, string){
 
-	standardsYamlFile, err := ioutil.ReadFile("/Users/gauravbang/Documents/meng/security-central/standards/nist-800-53-latest.yaml")
+	print("Loading Standards....\n")
+
+	standardsYamlFile, err := ioutil.ReadFile("/home/mukul/git/standards/nist-800-53-latest.yaml")
 	if err != nil {
 		log.Printf("standardsYamlFile.Get err   #%v ", err)
 	}
@@ -114,10 +119,11 @@ func LoadStandards() (error, string){
 	var standardsResult map[string]interface{}
 	json.Unmarshal([]byte(standardsJson), &standardsResult)
 
-	var controls[] root.Controls
+	//var controls[] root.Controls
 	i := 0
 	for key, value := range standardsResult {
 		// Each value is an interface{} type, that is type asserted as a string
+		controls := []root.Controls{}
 
 		var desc, family, name string
 		for k, v := range value.(map[string]interface{}) {
@@ -136,12 +142,18 @@ func LoadStandards() (error, string){
 		//standard := Standards{ControlInfo: controlInfo, ControlName:key}
 		//controlInfo := root.Controls{ Family:family, Name:name, Description:desc }
 		controlInfo := root.ControlInfo{ Family:family, Name:name, Description:desc }
-		controls[i] = root.Controls{ ControlName: key , ControlInfo: controlInfo }
+		//print(controlInfo)
+		//print(key)
+		//controls[i] = root.Controls{ ControlName: key , ControlInfo: controlInfo }
+		controls = append(controls, root.Controls{ ControlName: key , ControlInfo: controlInfo })
+		//fmt.Println(controls)
 		i += 1
 		// todo: Replace with standard name from file name
 		standard := root.Standard{StandardName:"nist-800-53-latest", Controls: controls}
+		//print(standard.StandardName)
 		// TODO: insert every standard into DB
-		var standardService root.StandardService
+		//var standardService root.StandardService
+		var standardService mongo.StandardsService
 		standardService.CreateStandard(&standard)
 		fmt.Println(standard)
 		break // TODO: remove after test

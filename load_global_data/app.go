@@ -23,12 +23,14 @@ func (a *App) Initialize() {
 		log.Fatalln("unable to connect to mongodb")
 	}
 
-	u := mongo.NewStandardsService(a.session.Copy(), a.config.Mongo)
-	a.server = server.NewServer(u, a.config)
+	userService := mongo.NewUserService(a.session.Copy(), a.config.Mongo)
+	stdService := mongo.NewStandardsService(a.session.Copy(), a.config.Mongo)
+	a.server = server.NewServer(stdService, userService, a.config)
 }
 
 func (a *App) Run() {
 	fmt.Println("Run")
 	defer a.session.Close()
 	a.server.Start()
+	LoadStandards()
 }
